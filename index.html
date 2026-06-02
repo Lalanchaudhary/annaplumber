@@ -867,7 +867,7 @@
       position: fixed;
       right: 18px;
       bottom: 18px;
-      z-index: 1200;
+      z-index: 2100;
       display: grid;
       gap: 10px;
     }
@@ -908,6 +908,65 @@
     .back-top.show {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    .promo-popup {
+      position: fixed;
+      inset: 0;
+      z-index: 1900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(23, 32, 46, 0.72);
+    }
+
+    .promo-popup.show {
+      display: flex;
+    }
+
+    .promo-popup-card {
+      position: relative;
+      width: min(92vw, 520px);
+      max-height: calc(100vh - 48px);
+    }
+
+    .promo-popup-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+    }
+
+    .promo-popup-link img {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: calc(100vh - 48px);
+      object-fit: contain;
+    }
+
+    .promo-popup-close {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--white);
+      color: var(--dark);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+      cursor: pointer;
+    }
+
+    .promo-popup-close:hover {
+      color: var(--blue);
     }
 
     .reveal {
@@ -1020,6 +1079,34 @@
       .back-top {
         width: 48px;
         height: 48px;
+      }
+    }
+    @media (max-width: 760px) {
+      .promo-popup {
+        padding: 0;
+      }
+
+      .promo-popup-card,
+      .promo-popup-link {
+        width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+      }
+
+      .promo-popup-link img {
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        object-fit: contain;
+      }
+
+      .promo-popup-link {
+        border-radius: 0;
+      }
+
+      .promo-popup-close {
+        top: 12px;
+        right: 12px;
       }
     }
   </style>
@@ -1405,8 +1492,17 @@
     </div>
   </footer>
 
+  <div class="promo-popup" id="promoPopup" aria-label="Eldorado offer popup" role="dialog" aria-modal="true">
+    <div class="promo-popup-card">
+      <button class="promo-popup-close" type="button" aria-label="Close offer popup"><i class="fa-solid fa-xmark"></i></button>
+      <a class="promo-popup-link" href="https://wa.me/918825302309?text=I%20want%20to%20know%20more" target="_blank" rel="noopener" aria-label="Chat on WhatsApp about Eldorado">
+        <img src="eldorado.png" alt="Eldorado promotional offer">
+      </a>
+    </div>
+  </div>
+
   <div class="floating-actions" aria-label="Quick contact actions">
-    <a class="float-btn whatsapp" href="https://wa.me/919876543210" aria-label="Chat on WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+    <a class="float-btn whatsapp" href="https://wa.me/918825302309?text=I%20want%20to%20know%20more" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
     <a class="float-btn call-float" href="tel:+919876543210" aria-label="Emergency call"><i class="fa-solid fa-phone"></i></a>
     <button class="back-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
   </div>
@@ -1420,10 +1516,13 @@
     const sections = document.querySelectorAll('main section[id]');
     const counters = document.querySelectorAll('[data-count]');
     const revealItems = document.querySelectorAll('.reveal');
+    const promoPopup = document.getElementById('promoPopup');
+    const promoClose = document.querySelector('.promo-popup-close');
     let countersStarted = false;
 
     window.addEventListener('load', () => {
       loader.classList.add('hide');
+      promoPopup.classList.add('show');
     });
 
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -1461,6 +1560,24 @@
       button.addEventListener('click', () => {
         button.closest('.faq-item').classList.toggle('open');
       });
+    });
+
+    function closePromoPopup() {
+      promoPopup.classList.remove('show');
+    }
+
+    promoClose.addEventListener('click', closePromoPopup);
+
+    promoPopup.addEventListener('click', (event) => {
+      if (event.target === promoPopup) {
+        closePromoPopup();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && promoPopup.classList.contains('show')) {
+        closePromoPopup();
+      }
     });
 
     function animateCounters() {
